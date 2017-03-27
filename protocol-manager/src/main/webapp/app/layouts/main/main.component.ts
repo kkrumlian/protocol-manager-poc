@@ -4,12 +4,15 @@ import { Router, ActivatedRouteSnapshot, NavigationEnd, RoutesRecognized, Naviga
 import { Title } from '@angular/platform-browser';
 import { LocalStorageService } from 'ng2-webstorage';
 import { StateStorageService, AuthServerProvider } from '../../shared';
+import { APP_DOMAIN, APP_PORT } from '../../app.constants';
 
 @Component({
     selector: 'jhi-main',
     templateUrl: './main.component.html'
 })
 export class JhiMainComponent implements OnInit {
+
+    redirectUri = 'http://' +  APP_DOMAIN + ':' + APP_PORT + '/';
 
     constructor(
         private titleService: Title,
@@ -46,15 +49,30 @@ export class JhiMainComponent implements OnInit {
                 let destination = {name: destinationName, data: destinationData};
                 this.$storageService.storeDestinationState(destination, params, from);
             }
-            if (event instanceof NavigationStart && event.url === '/access_token') {
-                this.authServerProvider.getLock().resumeAuth(window.location.hash, (error, authResult) => {
-                    if (error) {
-                        return console.log(error);
-                    }
+            if (event instanceof NavigationStart) {
+                if (event.url === '/access_token') {
+                    this.authServerProvider.getLock().resumeAuth(window.location.hash, (error, authResult) => {
+                        if (error) {
+                            return console.log(error);
+                        }
 
-                    this.$localStorage.store('id_token', authResult.idToken);
-                    this.router.navigate(['/']);
-                });
+                        this.$localStorage.store('id_token', authResult.idToken);
+                        this.router.navigate(['/']);
+                    });
+                }
+                if (!this.authServerProvider.isAuthenticated()) {
+                    this.authServerProvider.getAuthentication().getSSOData((error, authResult) => {
+                        if (authResult.sso) {
+                            this.authServerProvider.getWebAuth().authorize({
+                                connection: authResult.lastUsedConnection.name,
+                                redirectUri: this.redirectUri,
+                                responseType: 'token id_token',
+                                scope: 'openid name picture',
+                                prompt: 'none'
+                            });
+                        }
+                    });
+                }
             }
         });
     }

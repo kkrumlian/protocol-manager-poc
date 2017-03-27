@@ -132,7 +132,7 @@
     magic-string "^0.19.0"
     source-map "^0.5.6"
 
-"@types/auth0-js@latest":
+"@types/auth0-js@^8.3.0", "@types/auth0-js@latest":
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/@types/auth0-js/-/auth0-js-8.3.0.tgz#387070e339400b7a7b3b2f4b78cb5ff229aa67e0"
 
@@ -426,7 +426,7 @@ asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
 
-auth0-js@8.4.0:
+auth0-js@8.4.0, auth0-js@^8.4.0:
   version "8.4.0"
   resolved "https://registry.yarnpkg.com/auth0-js/-/auth0-js-8.4.0.tgz#e01cb7af6c616d180c635adc97d2b3b8b367bf24"
   dependencies:
