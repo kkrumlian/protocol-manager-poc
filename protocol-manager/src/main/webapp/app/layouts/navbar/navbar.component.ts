@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import { ProfileService } from '../profiles/profile.service'; // FIXME barrel doesnt work here
-import { Principal, LoginModalService, LoginService } from '../../shared';
+import { Principal, LoginModalService, LoginService, AuthServerProvider } from '../../shared';
 
 import { VERSION, DEBUG_INFO_ENABLED } from '../../app.constants';
 
@@ -28,7 +28,8 @@ export class NavbarComponent implements OnInit {
         private principal: Principal,
         private loginModalService: LoginModalService,
         private profileService: ProfileService,
-        private router: Router
+        private router: Router,
+        private authServerProvider: AuthServerProvider
     ) {
         this.version = DEBUG_INFO_ENABLED ? 'v' + VERSION : '';
         this.isNavbarCollapsed = true;
@@ -48,16 +49,16 @@ export class NavbarComponent implements OnInit {
     }
 
     isAuthenticated() {
-        return this.principal.isAuthenticated();
+        return this.authServerProvider.isAuthenticated();
     }
 
     login() {
-        this.modalRef = this.loginModalService.open();
+        this.authServerProvider.getLock().show();
     }
 
     logout() {
         this.collapseNavbar();
-        this.loginService.logout();
+        this.authServerProvider.logout();
         this.router.navigate(['']);
     }
 
@@ -66,6 +67,7 @@ export class NavbarComponent implements OnInit {
     }
 
     getImageUrl() {
-        return this.isAuthenticated() ? this.principal.getImageUrl() : null;
+        // return this.isAuthenticated() ? this.principal.getImageUrl() : null;\
+        return null;
     }
 }

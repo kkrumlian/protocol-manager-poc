@@ -2,9 +2,31 @@ import { Injectable } from '@angular/core';
 import { Http, Response, Headers, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { LocalStorageService, SessionStorageService } from 'ng2-webstorage';
+import { AUTH0_CLIENT_ID, AUTH0_DOMAIN } from '../../app.constants';
+import { Authentication, WebAuth } from  'auth0-js';
+import Auth0Lock from 'auth0-lock';
+import { tokenNotExpired } from 'angular2-jwt';
 
 @Injectable()
 export class AuthServerProvider {
+
+    // Configure Auth0
+    lock = new Auth0Lock(AUTH0_CLIENT_ID, AUTH0_DOMAIN, {
+        auth: {
+            responseType: 'token'
+        }
+    });
+
+    webAuth = new WebAuth({
+        domain: AUTH0_DOMAIN,
+        clientID: AUTH0_CLIENT_ID
+    });
+
+    authentication = new Authentication({
+        domain: AUTH0_DOMAIN,
+        clientID: AUTH0_CLIENT_ID
+    });
+
     constructor(
         private http: Http,
         private $localStorage: LocalStorageService,
@@ -55,11 +77,23 @@ export class AuthServerProvider {
         }
     }
 
-    logout (): Observable<any> {
-        return new Observable(observer => {
-            this.$localStorage.clear('authenticationToken');
-            this.$sessionStorage.clear('authenticationToken');
-            observer.complete();
-        });
+    logout () {
+        this.$localStorage.clear('id_token');
+    }
+
+    public getLock() {
+        return this.lock;
+    }
+
+    public getWebAuth() {
+        return this.webAuth;
+    }
+
+    public getAuthentication() {
+        return this.authentication;
+    }
+
+    public isAuthenticated() {
+        return tokenNotExpired('jhi-id_token');
     }
 }

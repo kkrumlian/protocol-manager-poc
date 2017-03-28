@@ -10,5 +10,5 @@ export const HOME_ROUTE: Route = {
     authorities: [],
     pageTitle: 'Welcome, Java Hipster!'
   },
-  canActivate: [UserRouteAccessService]
+  canActivate: []
 };
